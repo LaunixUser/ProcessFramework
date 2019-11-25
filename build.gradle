@@ -21,6 +21,6 @@ dependencies {
             [group: 'org.jdom', name: 'jdom2', version: '[2.0,)'],
             [group: 'org.apache.pdfbox', name: 'pdfbox', version: '[2.0,)'],
             [group: 'com.github.vandeseer', name: 'easytable', version: '0.4.2'],
-            fileTree(dir: "$System.env.JAVA_PROJECTS_HOME/idea/Table/out/artifacts/Table_jar", include: '*.jar')
+            fileTree(dir: "../Table/out/artifacts/Table_jar", include: '*.jar')
     )
 }

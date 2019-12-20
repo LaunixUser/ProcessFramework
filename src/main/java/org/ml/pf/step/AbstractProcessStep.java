@@ -1,26 +1,3 @@
-/*
- * The MIT License
- *
- * Copyright 2019 Dr. Matthias Laux.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 package org.ml.pf.step;
 
 import org.ml.pf.filter.IFilter;
@@ -46,6 +23,7 @@ public abstract class AbstractProcessStep<S, T, U> implements IProcessStep<S, T,
     protected PropertyManager propertyManager;
     protected List<IOutput<U>> outputs = new ArrayList<>();
     protected List<IFilter<S>> filters = new ArrayList<>();
+    private U outputDataCache;
 
     /**
      * @param id
@@ -185,9 +163,9 @@ public abstract class AbstractProcessStep<S, T, U> implements IProcessStep<S, T,
 
         T convertedData = convert(filteredData);
 
-        U outputData = createOutputData(convertedData);
+        outputDataCache = createOutputData(convertedData);
 
-        invokeOutputs(outputData);
+        invokeOutputs(outputDataCache);
 
         //.... Pass the data on to the next step(s) (if any)
         result = convertedData;
@@ -206,9 +184,7 @@ public abstract class AbstractProcessStep<S, T, U> implements IProcessStep<S, T,
         if (outputs == null) {
             throw new NullPointerException("outputs may not be null");
         }
-        for (IOutput<U> output : outputs) {
-            this.outputs.add(output);
-        }
+        this.outputs.addAll(Arrays.asList(outputs));
         return this;
     }
 
@@ -220,9 +196,9 @@ public abstract class AbstractProcessStep<S, T, U> implements IProcessStep<S, T,
         if (data == null) {
             throw new NullPointerException("data may not be null");
         }
-        for (IOutput<U> output : outputs) {
+        outputs.forEach((output) -> {
             output.put(data);
-        }
+        });
     }
 
     /**
@@ -235,9 +211,7 @@ public abstract class AbstractProcessStep<S, T, U> implements IProcessStep<S, T,
         if (filters == null) {
             throw new NullPointerException("filters may not be null");
         }
-        for (IFilter<S> filter : filters) {
-            this.filters.add(filter);
-        }
+        this.filters.addAll(Arrays.asList(filters));
         return this;
     }
 
@@ -260,7 +234,18 @@ public abstract class AbstractProcessStep<S, T, U> implements IProcessStep<S, T,
     /**
      * @return
      */
+    @Override
     public PropertyManager getPropertyManager() {
         return propertyManager;
+    }
+
+    /**
+     * The outputData generated in the process() method is stored here such that
+     * it can be accessed for other use. This is more of a convenience feature
+     *
+     * @return
+     */
+    public U getOutputDataCache() {
+        return outputDataCache;
     }
 }

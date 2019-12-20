@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<steps>
+    <step className="org.ml.pf.step.impl.excel.ExcelReadWorkbookPathStep" id="Excel_01">
+        <properties>
+        </properties>
+        <outputs>
+        </outputs>
+    </step>    
+</steps>

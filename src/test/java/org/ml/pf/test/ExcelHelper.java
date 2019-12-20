@@ -1,27 +1,4 @@
-/*
- * The MIT License
- *
- * Copyright 2019 Dr. Matthias Laux.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-package org.ml.pf.output.impl;
+package org.ml.pf.test;
 
 import java.util.Map;
 
@@ -75,7 +52,7 @@ public class ExcelHelper {
 
     /**
      * @param workbook
-     * @param tables   Sheet names are the keys here
+     * @param tables Sheet names are the keys here
      * @return
      */
     public Workbook addTables(Workbook workbook, Map<String, Table> tables) {
@@ -108,6 +85,11 @@ public class ExcelHelper {
         if (sheetName == null) {
             throw new NullPointerException("sheetName may not be null");
         }
+        if (table.getRenderer(RenderingContext.excel) == null) {
+            throw new UnsupportedOperationException("No IexcelRenderer defined for this table - rendering can not be performed");
+        }
+
+        IExcelRenderer renderer = (IExcelRenderer) table.getRenderer(RenderingContext.excel);
 
         CellStyle cs = workbook.createCellStyle();
         cs.setWrapText(true);
@@ -118,39 +100,10 @@ public class ExcelHelper {
         for (int r = table.getRow0(); r <= table.getRowEnd(); r++) {
             Row row = sheet.createRow(r);
             for (int c = table.getCol0(); c <= table.getColEnd(); c++) {
-
                 Cell cell = row.createCell(c);
                 cell.setCellStyle(cs);
                 org.ml.table.Cell dataCell = table.getCell(r, c);
-                ((IExcelRenderer) table.getRenderer(RenderingContext.excel)).renderCell(cell, dataCell);
-
-                /**
-                 * try {
-                 *
-                 * if (dataCell.getContent() != null) {
-                 *
-                 * Object content = dataCell.getContent();
-                 *
-                 * if (content instanceof Integer) { cell.setCellValue((Integer)
-                 * content); } else if (content instanceof Float) {
-                 * cell.setCellValue((Float) content); } else if (content
-                 * instanceof Double) { cell.setCellValue((Double) content); }
-                 * else if (content instanceof Boolean) {
-                 * cell.setCellValue((Boolean) content); } else if (content
-                 * instanceof String) { cell.setCellValue((String) content); }
-                 * else if (content instanceof EmailContent) { String address =
-                 * ((EmailContent) content).getAddress();
-                 * cell.setCellValue("mailto:" + address); } else if (content
-                 * instanceof UrlContent) { UrlContent urlContent = (UrlContent)
-                 * content; cell.setCellValue(urlContent.getText()); } else {
-                 * cell.setCellValue(content.toString()); }
-                 *
-                 * }
-                 *
-                 * } catch (ClassCastException ex) { throw new
-                 * UnsupportedOperationException(ex.getMessage() + " / Content
-                 * value : " + dataCell.getContents()); }
-                 */
+                renderer.renderCell(cell, dataCell);
             }
         }
         return workbook;

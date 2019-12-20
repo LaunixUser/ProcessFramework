@@ -1,43 +1,6 @@
-/*
- * The MIT License
- *
- * Copyright 2019 Dr. Matthias Laux.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-/**
- * Note: this is an EXPERIMENTAL feature only (as of April 2019) with several know issues:
- * <p>
- * 1. Not fully validated ... right now it's more of a POC really
- * 2. No support for tables spanning multiple pages
- * 3. No support for multiple tables per document ... no idea yet how to handle this
- * 4. No concept yet of page width and how to set column widths to make sure all columns fit onto the page (potentially
- * going for landscape mode where necessary)
- * 5. No support for PDF page parameters (spacings, fonts, font sizes, colors, ...)
- * 6. It seems to be awfully slow ... probably due to the use of the builder pattern below; this is based on the examples of the
- * Java library used and may not be the smartest way to do this
- * <p>
- * A full-featured version would require a lot of work - and maybe just using a PDF printer together with HTML print views
- * is the better approach here.
- */
 package org.ml.pf.output.impl;
 
+import org.ml.pf.output.OutputContextData;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -69,13 +32,27 @@ import static org.vandeseer.easytable.settings.HorizontalAlignment.CENTER;
 import static org.vandeseer.easytable.settings.HorizontalAlignment.LEFT;
 
 /**
- * @author osboxes
+ * Note: this is an EXPERIMENTAL feature only (as of April 2019) with several know issues:
+ * <p>
+ * 1. Not fully validated ... right now it's more of a POC really
+ * 2. No support for tables spanning multiple pages
+ * 3. No support for multiple tables per document ... no idea yet how to handle this
+ * 4. No concept yet of page width and how to set column widths to make sure all columns fit onto the page (potentially
+ * going for landscape mode where necessary)
+ * 5. No support for PDF page parameters (spacings, fonts, font sizes, colors, ...)
+ * 6. It seems to be awfully slow ... probably due to the use of the builder pattern below; this is based on the examples of the
+ * Java library used and may not be the smartest way to do this
+ * <p>
+ * A full-featured version would require a lot of work - and maybe just using a PDF printer together with HTML print views
+ * is the better approach here.
+
+* @author osboxes
  */
 public class PDFTableFileOutput extends PropertyHolder implements IFileOutput<TableData> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(PDFTableFileOutput.class.getName());
     public final static Namespace NAMESPACE = new Namespace("PDFTableFileOutput");
-    private PageData pageData;
+    private OutputContextData pageData;
     private final static Color BLUE_DARK = new Color(76, 129, 190);
     private final static Color BLUE_LIGHT_1 = new Color(186, 206, 230);
     private final static Color BLUE_LIGHT_2 = new Color(218, 230, 242);
@@ -105,14 +82,14 @@ public class PDFTableFileOutput extends PropertyHolder implements IFileOutput<Ta
     public PDFTableFileOutput(PropertyManager propertyManager) {
         super(propertyManager);
         this.propertyManager.validateAllPropertyNames(NAMESPACE, RequiredKey.baseDirectory);
-        pageData = new PageData();
+        pageData = new OutputContextData();
     }
 
     /**
      * @param propertyManager
      * @param pageData
      */
-    public PDFTableFileOutput(PropertyManager propertyManager, PageData pageData) {
+    public PDFTableFileOutput(PropertyManager propertyManager, OutputContextData pageData) {
         super(propertyManager);
         if (pageData == null) {
             throw new NullPointerException("pageData may not be null");

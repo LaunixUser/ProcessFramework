@@ -1,33 +1,10 @@
-/*
- * The MIT License
- *
- * Copyright 2019 Dr. Matthias Laux.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 package org.ml.pf.output.impl;
 
+import org.ml.pf.output.OutputContextData;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.ml.pf.output.IFileOutput;
 import org.ml.pf.output.TableData;
-import org.ml.pf.render.SimpleVelocityRenderer;
 import org.ml.table.render.RenderingContext;
 import org.ml.tools.PropertyHolder;
 import org.ml.tools.PropertyManager;
@@ -45,6 +22,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.ml.table.render.impl.SimpleVelocityRenderer;
 
 /**
  * @author osboxes
@@ -52,7 +30,7 @@ import java.util.logging.Logger;
 public class VelocityTableFileOutput extends PropertyHolder implements IFileOutput<TableData> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(VelocityTableFileOutput.class.getName());
-    private PageData pageData;
+    private OutputContextData outputContextData;
 
     /**
      *
@@ -72,7 +50,7 @@ public class VelocityTableFileOutput extends PropertyHolder implements IFileOutp
      *
      */
     public enum VelocityContextKey {
-        pageData, tableData, date, fileName, rootFileName, renderingContext
+        outputContextData, tableData, date, fileName, rootFileName, renderingContext
     }
 
     /**
@@ -81,20 +59,20 @@ public class VelocityTableFileOutput extends PropertyHolder implements IFileOutp
     public VelocityTableFileOutput(PropertyManager propertyManager) {
         super(propertyManager);
         this.propertyManager.validateAllPropertyNames(RequiredKey.baseDirectory);
-        pageData = new PageData();
+        this.outputContextData = new OutputContextData();
     }
 
     /**
      * @param propertyManager
      * @param pageData
      */
-    public VelocityTableFileOutput(PropertyManager propertyManager, PageData pageData) {
+    public VelocityTableFileOutput(PropertyManager propertyManager, OutputContextData pageData) {
         super(propertyManager);
         if (pageData == null) {
             throw new NullPointerException("pageData may not be null");
         }
         this.propertyManager.validateAllPropertyNames(RequiredKey.baseDirectory);
-        this.pageData = pageData;
+        this.outputContextData = pageData;
     }
 
     /**
@@ -121,7 +99,7 @@ public class VelocityTableFileOutput extends PropertyHolder implements IFileOutp
             Template template = velocityConfig.getTemplate();
 
             //.... Copy properties into PageData instance
-            pageData.setProperties(propertyManager);
+            outputContextData.setProperties(propertyManager);
 
             String baseDirectory = propertyManager.getProperty(RequiredKey.baseDirectory);
             String subDirectory = propertyManager.getString(OptionalKey.subDirectory, "");
@@ -143,17 +121,14 @@ public class VelocityTableFileOutput extends PropertyHolder implements IFileOutp
                     }
                 }
 
-                //                String fullRootFileName = Paths.get(file.getAbsolutePath()).getFileName().toString();
-                // This removes a file extension ... not perfectly sure what the duplicate [] mean here in the RegEx though
-                //              String rootFileName = fullRootFileName.replaceFirst("[.][^.]+$", "");
-                //.... Add some standard data to the PageData instance
-                pageData.setProperty(VelocityContextKey.date, new Date().toString());
-                pageData.setProperty(VelocityContextKey.fileName, Paths.get(file.getAbsolutePath()).getFileName().toString());
-                pageData.setProperty(VelocityContextKey.rootFileName, rootFileName);
+                //.... Add some standard data to the OutputContextData instance
+                outputContextData.setProperty(VelocityContextKey.date, new Date().toString());
+                outputContextData.setProperty(VelocityContextKey.fileName, Paths.get(file.getAbsolutePath()).getFileName().toString());
+                outputContextData.setProperty(VelocityContextKey.rootFileName, rootFileName);
 
                 //.... Load the VelocityContext
                 context.put(VelocityContextKey.tableData.toString(), tableData);
-                context.put(VelocityContextKey.pageData.toString(), pageData);
+                context.put(VelocityContextKey.outputContextData.toString(), outputContextData);
                 context.put(VelocityContextKey.renderingContext.toString(), RenderingContext.velocity);
 
                 //.... Place TableData properties into the velocity context 

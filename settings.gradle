@@ -1,3 +1,3 @@
-rootProject.name = 'ProcessFramework'
+rootProject.name = 'process-framework'
 
 includeBuild '../Table'

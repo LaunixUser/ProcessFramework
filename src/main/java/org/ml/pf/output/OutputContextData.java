@@ -16,8 +16,8 @@ import org.ml.tools.PropertyManager;
  */
 public class OutputContextData extends PropertyManager {
 
-    private Map<String, Set<String>> contextSetData = new HashMap<>();
-    private Map<String, Map<String, Object>> contextMapData = new HashMap<>();
+    private final Map<String, Set<String>> contextSetData = new HashMap<>();
+    private final Map<String, Map<String, Object>> contextMapData = new HashMap<>();
 
     /**
      * @param setName

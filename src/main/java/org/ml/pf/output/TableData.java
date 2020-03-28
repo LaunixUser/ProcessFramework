@@ -18,9 +18,9 @@ import org.ml.table.Table;
  */
 public class TableData extends PropertyManager {
 
-    private Map<String, Table> tables = new TreeMap<>();
-    private Map<String, String> subHeaders = new HashMap<>();
-    private Map<String, String> subFooters = new HashMap<>();
+    private final Map<String, Table> tables = new TreeMap<>();
+    private final Map<String, String> subHeaders = new HashMap<>();
+    private final Map<String, String> subFooters = new HashMap<>();
     private String tableHeader = "";
     private String tableFooter = "";
     private String description = "";

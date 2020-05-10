@@ -85,11 +85,11 @@ public class ExcelHelper {
         if (sheetName == null) {
             throw new NullPointerException("sheetName may not be null");
         }
-        if (table.getRenderer(RenderingContext.excel) == null) {
+        if (table.getRenderer(RenderingContext.EXCEL) == null) {
             throw new UnsupportedOperationException("No IexcelRenderer defined for this table - rendering can not be performed");
         }
 
-        IExcelRenderer renderer = (IExcelRenderer) table.getRenderer(RenderingContext.excel);
+        IExcelRenderer renderer = (IExcelRenderer) table.getRenderer(RenderingContext.EXCEL);
 
         CellStyle cs = workbook.createCellStyle();
         cs.setWrapText(true);

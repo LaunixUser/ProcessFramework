@@ -116,8 +116,8 @@ public class VelocityTableFileOutput extends PropertyHolder implements IFileOutp
                 //.... Add a Velocity renderer to the tables in the tableData
                 //     If we want to allow for other renderers, we need to add some generic coding here
                 for (String tableKey : tableData.getTables().keySet()) {
-                    if (!tableData.getTable(tableKey).hasRenderer(RenderingContext.velocity)) {
-                        tableData.getTable(tableKey).addRenderer(RenderingContext.velocity, new SimpleVelocityRenderer());
+                    if (!tableData.getTable(tableKey).hasRenderer(RenderingContext.VELOCITY)) {
+                        tableData.getTable(tableKey).addRenderer(RenderingContext.VELOCITY, new SimpleVelocityRenderer());
                     }
                 }
 
@@ -129,9 +129,9 @@ public class VelocityTableFileOutput extends PropertyHolder implements IFileOutp
                 //.... Load the VelocityContext
                 context.put(VelocityContextKey.tableData.toString(), tableData);
                 context.put(VelocityContextKey.outputContextData.toString(), outputContextData);
-                context.put(VelocityContextKey.renderingContext.toString(), RenderingContext.velocity);
+                context.put(VelocityContextKey.renderingContext.toString(), RenderingContext.VELOCITY);
 
-                //.... Place TableData properties into the velocity context 
+                //.... Place TableData properties into the VELOCITY context 
                 for (String key : tableData.getProperties().keySet()) {
                     context.put(key, tableData.getProperty(key));
                 }

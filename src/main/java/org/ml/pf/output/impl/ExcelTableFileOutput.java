@@ -84,8 +84,8 @@ public class ExcelTableFileOutput extends PropertyHolder implements IFileOutput<
             //.... Add a renderer to the tables in the tableData
             //     If we want to allow for other renderers, we need to add some generic coding here
             for (String tableKey : tableData.getTables().keySet()) {
-                if (!tableData.getTable(tableKey).hasRenderer(RenderingContext.excel)) {
-                    tableData.getTable(tableKey).addRenderer(RenderingContext.excel, new SimpleExcelRenderer());
+                if (!tableData.getTable(tableKey).hasRenderer(RenderingContext.EXCEL)) {
+                    tableData.getTable(tableKey).addRenderer(RenderingContext.EXCEL, new SimpleExcelRenderer());
                 }
             }
 
@@ -182,11 +182,11 @@ public class ExcelTableFileOutput extends PropertyHolder implements IFileOutput<
         if (sheetName == null) {
             throw new NullPointerException("sheetName may not be null");
         }
-        if (table.getRenderer(RenderingContext.excel) == null) {
+        if (table.getRenderer(RenderingContext.EXCEL) == null) {
             throw new UnsupportedOperationException("No IexcelRenderer defined for this table - rendering can not be performed");
         }
 
-        IExcelRenderer renderer = (IExcelRenderer) table.getRenderer(RenderingContext.excel);
+        IExcelRenderer renderer = (IExcelRenderer) table.getRenderer(RenderingContext.EXCEL);
 
         CellStyle cs = workbook.createCellStyle();
         cs.setWrapText(true);

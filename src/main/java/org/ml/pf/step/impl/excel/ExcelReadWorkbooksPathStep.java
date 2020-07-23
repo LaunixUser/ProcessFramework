@@ -1,6 +1,7 @@
 package org.ml.pf.step.impl.excel;
 
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -16,10 +17,10 @@ import org.ml.pf.step.AbstractTransferProcessStep;
 import org.ml.pf.step.impl.tool.IFileFilter;
 
 /**
- * Read all the Excel files from a given path into Workbook instances.
- * A file filter can be applied before actually reading the files.
-
-* @author osboxes
+ * Read all the Excel files from a given path into Workbook instances. A file
+ * filter can be applied before actually reading the files.
+ *
+ * @author osboxes
  */
 public class ExcelReadWorkbooksPathStep extends AbstractTransferProcessStep<Path, Map<String, Workbook>> {
 
@@ -63,11 +64,12 @@ public class ExcelReadWorkbooksPathStep extends AbstractTransferProcessStep<Path
 
         Map<String, Workbook> workbooks = new HashMap<>();
 
+        LOGGER.log(Level.INFO, "Base directory: {0}", baseDirectory);
         try {
 
             //.... First find all input files in the base directory
             Map<String, Path> allPaths = new HashMap<>();
-            for (Path path : Files.walk(baseDirectory)
+            for (Path path : Files.walk(baseDirectory, FileVisitOption.FOLLOW_LINKS)
                     .filter(s -> s.toString().matches(".*\\.xls[x]?$"))
                     .collect(Collectors.toList())) {
                 //         String i = path.getFileName().toString();

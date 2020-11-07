@@ -10,7 +10,6 @@ import org.ml.tools.PropertyHolder;
 import org.ml.tools.PropertyManager;
 import org.ml.tools.logging.LoggerFactory;
 import org.ml.tools.velocity.VelocityConfig;
-import org.ml.tools.velocity.VelocityFileType;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +22,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.ml.table.render.impl.SimpleVelocityRenderer;
+import org.ml.tools.FileType;
 
 /**
  * @author osboxes
@@ -108,7 +108,7 @@ public class VelocityTableFileOutput extends PropertyHolder implements IFileOutp
             for (String fileNameKey : tableDataMap.keySet()) {
 
                 String rootFileName = fileNameKey.replaceAll("\\..+$", "");   // Remove extension (if any)
-                File file = new File(baseDirectory + File.separatorChar + subDirectory + File.separatorChar + rootFileName + "." + VelocityFileType.html.toString());
+                File file = new File(baseDirectory + File.separatorChar + subDirectory + File.separatorChar + rootFileName  + FileType.HTML.getExtension());
 
                 VelocityContext context = new VelocityContext();
                 TableData tableData = tableDataMap.get(fileNameKey);

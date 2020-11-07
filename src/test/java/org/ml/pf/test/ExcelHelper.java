@@ -2,7 +2,6 @@ package org.ml.pf.test;
 
 import java.util.Map;
 
-import org.ml.tools.excel.ExcelFileType;
 import org.ml.tools.excel.ExcelTools;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -13,6 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.ml.table.Table;
 import org.ml.table.render.IExcelRenderer;
 import org.ml.table.render.RenderingContext;
+import org.ml.tools.FileType;
 
 /**
  * @author mlaux
@@ -43,7 +43,7 @@ public class ExcelHelper {
      * @param tables The table(s) to convert with the desired sheet name as key
      * @return The POI workbook
      */
-    public Workbook addTables(ExcelFileType type, Map<String, Table> tables) {
+    public Workbook addTables(FileType type, Map<String, Table> tables) {
         if (type == null) {
             throw new NullPointerException("type may not be null");
         }

@@ -8,7 +8,6 @@ import org.ml.pf.output.TableData;
 import org.ml.table.render.RenderingContext;
 import org.ml.tools.PropertyHolder;
 import org.ml.tools.PropertyManager;
-import org.ml.tools.excel.ExcelFileType;
 import org.ml.tools.excel.ExcelTools;
 import org.ml.tools.logging.LoggerFactory;
 
@@ -24,6 +23,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.ml.table.Table;
 import org.ml.table.render.IExcelRenderer;
 import org.ml.table.render.impl.SimpleExcelRenderer;
+import org.ml.tools.FileType;
 
 /**
  * @author osboxes
@@ -31,7 +31,7 @@ import org.ml.table.render.impl.SimpleExcelRenderer;
 public class ExcelTableFileOutput extends PropertyHolder implements IFileOutput<TableData> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ExcelTableFileOutput.class.getName());
-    private ExcelFileType excelFileType = ExcelFileType.xlsx;
+    private FileType excelFileType = FileType.XLSX;
 
     /**
      *
@@ -54,7 +54,7 @@ public class ExcelTableFileOutput extends PropertyHolder implements IFileOutput<
         super(propertyManager);
         this.propertyManager.validateAllPropertyNames(RequiredKey.baseDirectory);
         if (this.propertyManager.containsProperty(OptionalKey.excelFileType.toString())) {
-            excelFileType = ExcelFileType.valueOf(this.propertyManager.getProperty(OptionalKey.excelFileType.toString()));
+            excelFileType = FileType.valueOf(this.propertyManager.getProperty(OptionalKey.excelFileType.toString()));
         }
     }
 
@@ -72,7 +72,7 @@ public class ExcelTableFileOutput extends PropertyHolder implements IFileOutput<
         for (String fileNameKey : tables.keySet()) {
 
             String rootFileName = fileNameKey.replaceAll("\\..+$", "");   // Remove extension (if any)
-            File file = new File(baseDirectory + File.separatorChar + subDirectory + File.separatorChar + rootFileName + "." + excelFileType.toString());
+            File file = new File(baseDirectory + File.separatorChar + subDirectory + File.separatorChar + rootFileName +  excelFileType.getExtension());
 
             Workbook workbook = ExcelTools.getNewWorkbook(excelFileType);
             CellStyle cs = workbook.createCellStyle();
@@ -140,7 +140,7 @@ public class ExcelTableFileOutput extends PropertyHolder implements IFileOutput<
      * @param tables The table(s) to convert with the desired sheet name as key
      * @return The POI workbook
      */
-    private Workbook addTables(ExcelFileType type, Map<String, Table> tables) {
+    private Workbook addTables(FileType type, Map<String, Table> tables) {
         if (type == null) {
             throw new NullPointerException("type may not be null");
         }
